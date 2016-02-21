@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-        using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
 namespace GunFire
 {
@@ -18,8 +18,6 @@ namespace GunFire
         BufferedGraphics myBuffer;
         private byte count;
 
-        Classes.BaseImage _spaceShip;
-        Classes.BaseImage _laserBolt;
         Classes.Ship _ship;
 
         const int horizontalShipSpeed = 4;
@@ -29,27 +27,35 @@ namespace GunFire
         [DllImport("User32.dll")] 
         public static extern short GetAsyncKeyState(int vKey);
 
+        /// <summary>
+        /// Main constructor
+        /// </summary>
         public GunFire()
         {
             InitializeComponent();
 
-            _ship = new Classes.Ship();
-
-            _spaceShip = new Classes.BaseImage(Properties.Resources.SpaceShipSm, new Rectangle(100, 100, 104, 80)); // X, Y, Width, Height
-            _laserBolt = new Classes.BaseImage(Properties.Resources.LaserboltSm , new Rectangle(200, 132, 25, 15));
+            // Create the Ship n Lasers
+            _ship = new Classes.Ship(Properties.Resources.SpaceShipSm, new Rectangle(100, 100, 104, 80));
+            _ship.AddLaserBolt(Properties.Resources.LaserboltSm , new Rectangle(200, 132, 25, 15));
             
+            // Setup screen drawing styles
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
             this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
-            // Gets a reference to the current BufferedGraphicsContext
+            // Gets reference to current BufferedGraphicsContext
             currentContext = BufferedGraphicsManager.Current;
 
-            // Creates a BufferedGraphics instance associated with Form1, and with 
-            // dimensions the same size as the drawing surface of Form1.
+            // Create BufferedGraphics instance associated with Form1. 
+            // Set dimensions same as drawing surface of Form1.
             myBuffer = currentContext.Allocate(this.CreateGraphics(), this.DisplayRectangle);
 
+            // Do first draw
             DrawToBuffer(myBuffer.Graphics);            
+            
+            // Kick off the timer
             timer1.Start();
+
+            // Context no longer needed so dispose 
             currentContext.Dispose();
         }
 
@@ -58,25 +64,26 @@ namespace GunFire
             myBuffer.Render(e.Graphics);
         }
 
-        private void DrawToBuffer(Graphics g)
+        private void DrawToBuffer(Graphics graphicsSurface)
         {
-            // Clear the graphics buffer every five updates.
+            // Clear the graphics buffer every update.
             if (++count > 1)
             {
-                count = 0;
+                count = 0; // Reset update counter
+
                 myBuffer.Graphics.FillRectangle(Brushes.Black, 0, 0, this.Width, this.Height);
 
-                g.DrawImage(_spaceShip.Image, _spaceShip.Position);
-                g.DrawImage(_laserBolt.Image, _laserBolt.Position);
+                // Draw the ship
+                _ship.DrawShip(graphicsSurface);
             }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (GetAsyncKeyState((int)System.Windows.Forms.Keys.Right) != 0) _spaceShip.X += horizontalShipSpeed;
-            if (GetAsyncKeyState((int)System.Windows.Forms.Keys.Left) != 0) _spaceShip.X -= horizontalShipSpeed;
-            if (GetAsyncKeyState((int)System.Windows.Forms.Keys.Up) != 0) _spaceShip.Y -= verticalShipSpeed;
-            if (GetAsyncKeyState((int)System.Windows.Forms.Keys.Down) != 0) _spaceShip.Y += verticalShipSpeed;
+            if (GetAsyncKeyState((int)System.Windows.Forms.Keys.Right) != 0) _ship.ShipXAxis += horizontalShipSpeed;
+            if (GetAsyncKeyState((int)System.Windows.Forms.Keys.Left) != 0) _ship.ShipXAxis -= horizontalShipSpeed;
+            if (GetAsyncKeyState((int)System.Windows.Forms.Keys.Up) != 0) _ship.ShipYAxis -= verticalShipSpeed;
+            if (GetAsyncKeyState((int)System.Windows.Forms.Keys.Down) != 0) _ship.ShipYAxis += verticalShipSpeed;
             
             DrawToBuffer(myBuffer.Graphics);
 

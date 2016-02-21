@@ -10,20 +10,20 @@ namespace GunFire.Classes
     /// <summary>
     /// Image manager
     /// </summary>
-    public class BaseImage : IImage
+    public class Image : IImage
     {
         private Bitmap _image;
         private Rectangle _position;
 
-        public BaseImage(){}
+        public Image(){}
 
-        public BaseImage(Bitmap image, Rectangle position)
+        public Image(Bitmap image, Rectangle position)
         {
-            Image = image;
+            GfxImage = image;
             Position = position;
         }
 
-        public Bitmap Image 
+        public Bitmap GfxImage 
         { 
             get
             {

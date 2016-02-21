@@ -10,7 +10,7 @@ namespace GunFire.Classes
     interface IImage
     {
         // holder for the image itself
-        Bitmap Image {get; set;}
+        Bitmap GfxImage { get; set; }
 
         // Holder for image location and dimension
         Rectangle Position {get; set;}
