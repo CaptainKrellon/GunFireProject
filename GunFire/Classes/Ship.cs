@@ -10,26 +10,19 @@ namespace GunFire.Classes
     public class Ship
     {
         private Image _spaceShip;
-        private List<Image> _laserBolts = new List<Image>();
-        
+        private Image _laser;
+        public  bool _firing { get; set; }
+
         /// <summary>
         /// Ships construector. Always need an image and location
         /// </summary>
         /// <param name="shipImage"></param>
         /// <param name="shipPosition"></param>
-        public Ship(Bitmap shipImage, Rectangle shipPosition) 
+        public Ship(int X, int Y) 
         {
-            _spaceShip = new Image(shipImage, shipPosition);
-        }
-
-        /// <summary>
-        /// Add laser bolts. Might be more than one gun so make a list
-        /// </summary>
-        /// <param name="laserbBoltImage"></param>
-        /// <param name="laserBoltPosition"></param>
-        public void AddLaserBolt(Bitmap laserbBoltImage, Rectangle laserBoltPosition)
-        {
-            _laserBolts.Add(new Image(laserbBoltImage, laserBoltPosition));
+            // Create the Ship n Lasers
+            _spaceShip = new Image(Properties.Resources.SpaceShipSm, new Rectangle(X, Y, Properties.Resources.SpaceShipSm.Width, Properties.Resources.SpaceShipSm.Height));
+            _laser = new Image(Properties.Resources.LaserboltSm, new Rectangle(X+99, Y+44, Properties.Resources.LaserboltSm.Width, Properties.Resources.LaserboltSm.Height));
         }
 
         /// <summary>
@@ -64,23 +57,13 @@ namespace GunFire.Classes
             }
         }
 
-        /// <summary>
-        /// Updates the ship and associated graphics postions
-        /// </summary>
-        /// <param name="X"></param>
-        /// <param name="Y"></param>
-        public void UpdateShipPosition(int X, int Y)
-        {
-            // Need to update ship and laser bolts
-            _spaceShip.X = X;
-            _spaceShip.X = Y;
-
-            foreach (var _laserBolt in _laserBolts)
-            {
-                _laserBolt.X = X;
-                _laserBolt.Y = Y;
-            }
-        }
+        public Rectangle ShipPosition 
+        { 
+            get 
+            { 
+                return new Rectangle(_spaceShip.X, _spaceShip.Y, _spaceShip.Width, _spaceShip.Height); 
+            } 
+        } 
 
         /// <summary>
         /// Draw the ship to a graphics object
@@ -89,11 +72,24 @@ namespace GunFire.Classes
         public void DrawShip(Graphics graphicsSurface)
         {
             graphicsSurface.DrawImage(_spaceShip.GfxImage, _spaceShip.Position);
-
-            foreach (var _laserBolt in _laserBolts)
-            {
-                graphicsSurface.DrawImage(_laserBolt.GfxImage, _laserBolt.Position);
-            }
         }
+
+        /// <summary>
+        /// Draw the laser bolt to a graphics object
+        /// </summary>
+        /// <param name="graphicsSurface"></param>
+        public void DrawLaserBolt(Graphics graphicsSurface)
+        {
+
+            _laser.X = _spaceShip.X + 99;
+            _laser.Y = _spaceShip.Y + 44;
+
+            graphicsSurface.DrawImage(_laser.GfxImage, _laser.Position);
+        }
+
+        //internal void Fire(Graphics graphicsSurface)
+        //{
+
+        //}
     }
 }
